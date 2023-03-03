@@ -1,5 +1,5 @@
 BIN_DIR = bin
-BIN_NAME = term
+BIN_NAME = webterm
 build: $(BIN_DIR) $(BIN_DIR)/$(BIN_NAME)
 
 $(BIN_DIR):
@@ -7,7 +7,7 @@ $(BIN_DIR):
 
 GOSOURCES = $(shell find . -type f -name "*.go")
 $(BIN_DIR)/$(BIN_NAME): $(GOSOURCES)
-	@go build -o $(BIN_DIR)/$(BIN_NAME)
+	@go build -o $(BIN_DIR)/$(BIN_NAME) cmd/$(BIN_NAME)/main.go
 
 test:
 	@go test -cover ./...
@@ -19,7 +19,6 @@ gitignore:
 		cat .gitignore.custom >> .gitignore; \
 	fi
 
-clean:
-	@rm -rf $(BIN_DIR)/
-
 .PHONY: clean
+clean:
+	@rm -rf $(BIN_DIR)/$(BIN_NAME)

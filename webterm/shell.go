@@ -1,31 +1,20 @@
-package main
+package webterm
 
 import (
-	"flag"
 	"io"
-	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
 	"syscall"
 
+	"github.com/charmbracelet/log"
 	"github.com/creack/pty"
-	"github.com/gorilla/websocket"
 	"golang.org/x/term"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
+func Shell(shellName string) error {
+	c := exec.Command(shellName)
 
-func shell() error {
-	// Create arbitrary command.
-	c := exec.Command("zsh")
-
-	// Start the command with a pty.
 	ptmx, err := pty.Start(c)
 	if err != nil {
 		return err
@@ -39,7 +28,7 @@ func shell() error {
 	go func() {
 		for range ch {
 			if err := pty.InheritSize(os.Stdin, ptmx); err != nil {
-				log.Printf("error resizing pty: %s", err)
+				log.Error("error resizing pty", "err", err)
 			}
 		}
 	}()
@@ -59,35 +48,4 @@ func shell() error {
 	_, _ = io.Copy(os.Stdout, ptmx)
 
 	return nil
-}
-
-func echo(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
-}
-
-func main() {
-	address := flag.String("address", "localhost:8000", "Listening address")
-	flag.Parse()
-
-	http.HandleFunc("/", echo)
-
-	log.Fatal(http.ListenAndServe(*address, nil))
 }

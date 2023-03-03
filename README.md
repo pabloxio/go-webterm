@@ -1,6 +1,6 @@
-# go-term: Terminal over the Browser
+# go-webterm: Terminal over the Browser
 
-go-term is a [xterm.js](https://xtermjs.org/) Go backend for learning (and fun!) purposes
+go-webterm is a [xterm.js](https://xtermjs.org/) Go backend for learning (and fun!) purposes
 
 ## Requirements
 
@@ -8,10 +8,10 @@ go-term is a [xterm.js](https://xtermjs.org/) Go backend for learning (and fun!)
 
 ## Build and Usage
 
-Running `make build` will generate the binary `bin/term`
+Running `make build` will generate the binary `bin/webterm`
 
 ```bash
-bin/term
+bin/webterm
 Hello, World!
 ```
 
@@ -19,5 +19,5 @@ Hello, World!
 
 ```bash
 make test     
-?       github.com/pabloxio/go-term     [no test files]
+?       github.com/pabloxio/go-webterm     [no test files]
 ```

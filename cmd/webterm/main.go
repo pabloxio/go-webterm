@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	log "github.com/charmbracelet/log"
-	"github.com/pabloxio/go-webterm/webterm"
+	"github.com/pabloxio/go-webterm/handlers"
 )
 
 func main() {
@@ -14,8 +14,8 @@ func main() {
 	port := flag.Int("port", 8000, "Listening port")
 	flag.Parse()
 
-	http.HandleFunc("/healthz", webterm.Healthz)
-	http.HandleFunc("/", webterm.Echo)
+	http.HandleFunc("/healthz", handlers.HealthzHandler)
+	http.HandleFunc("/", handlers.WebtermHandler)
 
 	socket := fmt.Sprintf("%s:%d", *address, *port)
 

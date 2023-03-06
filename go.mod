@@ -5,8 +5,8 @@ go 1.20
 require (
 	github.com/charmbracelet/log v0.1.2
 	github.com/creack/pty v1.1.18
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.5.0
-	golang.org/x/term v0.5.0
 )
 
 require (

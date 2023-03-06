@@ -3,40 +3,26 @@ package webterm
 import (
 	"io"
 	"sync"
-
-	"github.com/charmbracelet/log"
-	"github.com/gorilla/websocket"
 )
 
 func (wt *Webterm) WebsocketWorker(wg *sync.WaitGroup) {
 	defer wg.Done()
+	defer wt.Close()
 
 	for {
-		messageType, reader, err := wt.conn.NextReader()
+		reader, err := wt.ReadWebsocket()
 		if err != nil {
-			log.Warn("Unable to grab next reader", "err", err)
-			wt.Close()
+			wt.logger.Warn("Unable to reader from Websocket", "err", err)
 			break
 		}
 
-		if messageType != websocket.BinaryMessage {
-			log.Warn("Unexpected meesage type")
-			continue
-		}
-
-		dataTypeBuf := make([]byte, 1)
-		_, err = reader.Read(dataTypeBuf)
+		wt.logger.Info("Copying bytes from Websocket to TTY")
+		_, err = io.Copy(wt.tty, *reader)
 		if err != nil {
-			log.Warn("Unable to read MessateType from reader")
+			wt.logger.Warn("Unable to copy from Websocket to TTY")
 			break
-		}
-
-		log.Info("Copying bytes from Websocket to TTY")
-		_, err = io.Copy(wt.tty, reader)
-		if err != nil {
-			log.Warn("Unable to copy from Websocket to TTY")
 		}
 	}
 
-	log.Info("Stopping TTYWorker")
+	wt.logger.Info("Stopping TTYWorker")
 }

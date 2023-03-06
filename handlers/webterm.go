@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/charmbracelet/log"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pabloxio/go-webterm/webterm"
 )
@@ -17,17 +18,20 @@ var upgrader = websocket.Upgrader{
 }
 
 func WebtermHandler(w http.ResponseWriter, r *http.Request) {
-	log.Info(fmt.Sprintf("Received connection from: %s", r.RemoteAddr))
+	uuid := uuid.New()
+	logger := log.New(log.WithTimestamp(), log.WithPrefix(uuid.String()))
+
+	logger.Info(fmt.Sprintf("New connection from: %s", r.RemoteAddr))
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Error("Unable to ugrade HTTP connection:", "err", err)
+		logger.Error("Unable to ugrade HTTP connection:", "err", err)
 		return
 	}
 
-	webterm, err := webterm.New(conn, "bash", []string{"-l"})
+	webterm, err := webterm.New(conn, "bash", []string{"-l"}, logger)
 	if err != nil {
-		log.Error("Unable to create Webterm", "err", err)
+		logger.Error("Unable to create Webterm", "err", err)
 		return
 	}
 	defer webterm.Close()
@@ -40,7 +44,7 @@ func WebtermHandler(w http.ResponseWriter, r *http.Request) {
 	wg.Add(1)
 	go webterm.WebsocketWorker(&wg)
 
-	log.Info("Waiting")
+	logger.Info("Waiting")
 	wg.Wait()
-	log.Info("Clossing connection")
+	logger.Info("Clossing connection")
 }

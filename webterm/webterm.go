@@ -1,6 +1,8 @@
 package webterm
 
 import (
+	"errors"
+	"io"
 	"os"
 	"os/exec"
 
@@ -10,23 +12,24 @@ import (
 )
 
 type Webterm struct {
-	cmd  *exec.Cmd
-	tty  *os.File
-	conn *websocket.Conn
+	cmd    *exec.Cmd
+	tty    *os.File
+	conn   *websocket.Conn
+	logger log.Logger
 }
 
-func New(conn *websocket.Conn, command string, args []string) (*Webterm, error) {
+func New(conn *websocket.Conn, command string, args []string, logger log.Logger) (*Webterm, error) {
 	cmd := exec.Command(command, args...)
 	cmd.Env = append(os.Environ(), "TERM=xterm")
 
-	log.Info("Starting TTY")
+	logger.Info("Starting TTY")
 	tty, err := pty.Start(cmd)
 	if err != nil {
-		log.Error("Not possible to start PTY", "err", err)
+		logger.Error("Not possible to start PTY", "err", err)
 		return nil, err
 	}
 
-	wt := &Webterm{cmd, tty, conn}
+	wt := &Webterm{cmd, tty, conn, logger}
 
 	return wt, nil
 }
@@ -35,7 +38,7 @@ func (wt *Webterm) ReadTTY() ([]byte, error) {
 	buf := make([]byte, 1024)
 	read, err := wt.tty.Read(buf)
 	if err != nil {
-		log.Error("Unable to read from PTY", "err", err)
+		wt.logger.Error("Unable to read from PTY", "err", err)
 		return nil, err
 	}
 
@@ -46,7 +49,23 @@ func (wt *Webterm) WriteWebsocket(message []byte) {
 	wt.conn.WriteMessage(websocket.BinaryMessage, message)
 }
 
-func (wt *Webterm) ReadWebsocket() {
+func (wt *Webterm) ReadWebsocket() (*io.Reader, error) {
+	messageType, reader, err := wt.conn.NextReader()
+	if err != nil {
+		return nil, err
+	}
+
+	if messageType != websocket.BinaryMessage {
+		return nil, errors.New("Unexpected message type")
+	}
+
+	dataTypeBuf := make([]byte, 1)
+	_, err = reader.Read(dataTypeBuf)
+	if err != nil {
+		return nil, err
+	}
+
+	return &reader, nil
 }
 
 func (wt *Webterm) Close() {

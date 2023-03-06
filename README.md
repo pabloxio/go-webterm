@@ -12,7 +12,14 @@ Running `make build` will generate the binary `bin/webterm`
 
 ```bash
 bin/webterm
-Hello, World!
+2023/03/05 19:35:09 INFO Listening on localhost:8000
+2023/03/05 19:35:43 INFO Received connection from: 127.0.0.1:53342
+2023/03/05 19:35:43 INFO Starting TTY
+2023/03/05 19:35:43 INFO Waiting
+2023/03/05 19:35:43 INFO Sending bytes from PTY to Websocket
+2023/03/05 19:35:43 INFO Sending bytes from PTY to Websocket
+2023/03/05 19:35:45 INFO Copying bytes from Websocket to TTY
+2023/03/05 19:35:45 INFO Sending bytes from PTY to Websocket
 ```
 
 ## Tests

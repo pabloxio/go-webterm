@@ -2,7 +2,6 @@ package webterm
 
 import (
 	"errors"
-	"io"
 	"os"
 	"os/exec"
 
@@ -49,23 +48,18 @@ func (wt *Webterm) WriteWebsocket(message []byte) {
 	wt.conn.WriteMessage(websocket.BinaryMessage, message)
 }
 
-func (wt *Webterm) ReadWebsocket() (*io.Reader, error) {
-	messageType, reader, err := wt.conn.NextReader()
+func (wt *Webterm) ReadWebsocket() ([]byte, error) {
+	wsMessageType, message, err := wt.conn.ReadMessage()
+	// wsMessageType, reader, err := wt.conn.NextReader()
 	if err != nil {
 		return nil, err
 	}
 
-	if messageType != websocket.BinaryMessage {
+	if wsMessageType != websocket.BinaryMessage {
 		return nil, errors.New("Unexpected message type")
 	}
 
-	dataTypeBuf := make([]byte, 1)
-	_, err = reader.Read(dataTypeBuf)
-	if err != nil {
-		return nil, err
-	}
-
-	return &reader, nil
+	return message, nil
 }
 
 func (wt *Webterm) Close() {

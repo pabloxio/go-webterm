@@ -13,7 +13,7 @@ func (wt *Webterm) TTYWorker(wg *sync.WaitGroup) {
 			break
 		}
 
-		wt.logger.Info("Sending bytes from PTY to Websocket")
+		wt.logger.Debug("Sending bytes from PTY to Websocket")
 		wt.WriteWebsocket(msg)
 	}
 

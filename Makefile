@@ -1,5 +1,6 @@
 BIN_DIR = bin
 BIN_NAME = webterm
+
 build: $(BIN_DIR) $(BIN_DIR)/$(BIN_NAME)
 
 $(BIN_DIR):

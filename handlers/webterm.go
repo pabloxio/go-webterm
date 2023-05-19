@@ -37,9 +37,11 @@ func WebtermHandler(w http.ResponseWriter, r *http.Request) {
 	defer webterm.Close()
 
 	var wg sync.WaitGroup
+
 	// pty -> xterm.js
 	wg.Add(1)
 	go webterm.TTYWorker(&wg)
+
 	// xterm.js > pty
 	wg.Add(1)
 	go webterm.WebsocketWorker(&wg)

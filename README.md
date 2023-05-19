@@ -25,6 +25,8 @@ bin/webterm
 ## Tests
 
 ```bash
-make test     
-?       github.com/pabloxio/go-webterm     [no test files]
+make test
+?       github.com/pabloxio/go-webterm/cmd/webterm      [no test files]
+?       github.com/pabloxio/go-webterm/webterm  [no test files]
+ok      github.com/pabloxio/go-webterm/handlers 0.272s  coverage: 12.5% of statements
 ```

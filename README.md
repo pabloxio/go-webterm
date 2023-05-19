@@ -1,6 +1,8 @@
 # go-webterm: Terminal over the Browser
 
-go-webterm is a [xterm.js](https://xtermjs.org/) Go backend for learning (and fun!) purposes
+go-webterm is a [xterm.js](https://xtermjs.org/) Go backend for learning (and fun!) purposes. [webterm-app](https://github.com/pabloxio/webterm-app) is an example ReactJS application that uses `go-webterm` as a `xterms.js` backend.
+
+![screenshoot](webterm.png)
 
 ## Requirements
 
